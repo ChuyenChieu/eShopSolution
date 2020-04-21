@@ -1,5 +1,4 @@
-﻿
-using eShopSolution.Data.EF;
+﻿using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.Exceptions;
 using System;
@@ -23,6 +22,7 @@ namespace eShopSolution.Application.Catalog.Products
     {
         private readonly EShopDbContext _context;
         private readonly IStorageService _storageService;
+
         public ManageProductService(EShopDbContext context, IStorageService storageService)
         {
             _context = context;
@@ -81,7 +81,7 @@ namespace eShopSolution.Application.Catalog.Products
                 }
             };
             //Save image
-            if(request.ThumbnailImage != null)
+            if (request.ThumbnailImage != null)
             {
                 product.ProductImages = new List<ProductImage>()
                 {
@@ -149,15 +149,37 @@ namespace eShopSolution.Application.Catalog.Products
                     Stock = x.p.Stock,
                     ViewCount = x.p.ViewCount
                 }).ToListAsync();
-                ;
+            ;
             //4. Select and projection
             var pagedResult = new PagedResult<ProductViewModel>()
             {
                 TotalRecord = totalRow,
                 Items = data
-
             };
             return pagedResult;
+        }
+
+        public async Task<ProductViewModel> GetById(int productId, string languageId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            var productTranslation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && x.LanguageId == languageId);
+            var productViewModel = new ProductViewModel()
+            {
+                Id = product.Id,
+                DateCreated = product.DateCreated,
+                Description = productTranslation != null ? productTranslation.Description : null,
+                Details = productTranslation != null ? productTranslation.Details : null,
+                LanguageId = productTranslation.LanguageId,
+                Name = productTranslation != null ? productTranslation.Name : null,
+                OriginalPrice = product.OriginalPrice,
+                Price = product.Price,
+                SeoAlias = productTranslation != null ? productTranslation.SeoAlias : null,
+                SeoDescription = productTranslation != null ? productTranslation.SeoDescription : null,
+                SeoTitle = productTranslation != null ? productTranslation.SeoTitle : null,
+                Stock = product.Stock,
+                ViewCount = product.ViewCount
+            };
+            return productViewModel;
         }
 
         public async Task<ProductImageViewModel> GetImageById(int imageId)
@@ -219,10 +241,10 @@ namespace eShopSolution.Application.Catalog.Products
             productTranslations.Description = request.Description;
             productTranslations.Details = request.Details;
 
-            if(request.ThumbnailImage != null)
+            if (request.ThumbnailImage != null)
             {
                 var thumbnailImage = await _context.ProductImages.FirstOrDefaultAsync(x => x.IsDefault == true && x.ProductId == request.Id);
-                if(thumbnailImage != null)
+                if (thumbnailImage != null)
                 {
                     thumbnailImage.FileSize = request.ThumbnailImage.Length;
                     thumbnailImage.ImagePath = await this.SaveFile(request.ThumbnailImage);
@@ -233,7 +255,7 @@ namespace eShopSolution.Application.Catalog.Products
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> UpdateImages(int imageId, ProductImageCreateRequest request)
+        public async Task<int> UpdateImage(int imageId, ProductImageUpdateRequest request)
         {
             var productImage = await _context.ProductImages.FindAsync(imageId);
             if (productImage == null)
@@ -265,6 +287,7 @@ namespace eShopSolution.Application.Catalog.Products
             product.Stock += addedQuantity;
             return await _context.SaveChangesAsync() > 0;
         }
+
         private async Task<string> SaveFile(IFormFile file)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
