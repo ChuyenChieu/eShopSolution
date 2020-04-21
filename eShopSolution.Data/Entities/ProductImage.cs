@@ -13,7 +13,7 @@ namespace eShopSolution.Data.Entities
         public bool IsDefault { get; set; } //chon anh mac dinh hien thi
         public DateTime DateCreated { get; set; }
         public int SortOrder { get; set; } //thu tu
-        public int FileSize { get; set; }
+        public long FileSize { get; set; }
         public Product Product { get; set; }
     }
 }
