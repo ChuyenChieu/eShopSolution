@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service;
 using eShopSolution.ViewModels.System.Users;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,6 +28,13 @@ namespace eShopSolution.AdminApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient(); //connect
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/User/Login/"; //Nếu chưa đăng nhập sẽ redirect tới LoginPath
+                    options.AccessDeniedPath = "/User/Forbidden/";
+                });
 
             services.AddControllersWithViews()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>()); ;
@@ -56,6 +64,8 @@ namespace eShopSolution.AdminApp
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseRouting();
 

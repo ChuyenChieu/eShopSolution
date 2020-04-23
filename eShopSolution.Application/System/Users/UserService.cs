@@ -42,7 +42,8 @@ namespace eShopSolution.Application.System.Users
             {
                 new Claim(ClaimTypes.Email, user.Email),  //Đẩy thông tin về token
                 new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Role, string.Join(";",roles)) //covert list roles, cách nhau dấu ;
+                new Claim(ClaimTypes.Role, string.Join(";",roles)), //covert list roles, cách nhau dấu ;
+                new Claim(ClaimTypes.Name, request.UserName)
             };
 
             //Mã hóa claim
