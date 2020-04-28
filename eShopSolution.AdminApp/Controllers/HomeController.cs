@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    [Authorize] //Không được phép vào khi chưa đăng nhập
-    public class HomeController : Controller
+    //[Authorize] //Không được phép vào khi chưa đăng nhập
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 

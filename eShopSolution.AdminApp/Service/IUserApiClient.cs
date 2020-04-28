@@ -9,10 +9,14 @@ namespace eShopSolution.AdminApp.Service
 {
     public interface IUserApiClient
     {
-        Task<String> Authentication(LoginRequest request);
+        Task<ApiResult<String>> Authentication(LoginRequest request);
 
-        Task<PagedResult<UserViewModel>> GetUsersPaging(GetUserPagingRequest request);
+        Task<ApiResult<PagedResult<UserViewModel>>> GetUsersPaging(GetUserPagingRequest request);
 
-        Task<bool> RegisterUser(RegisterRequest registerRequest);
+        Task<ApiResult<bool>> RegisterUser(RegisterRequest registerRequest);
+
+        Task<ApiResult<bool>> UpdateUser(Guid id, UserUpdateRequest updateRequest);
+
+        Task<ApiResult<UserViewModel>> GetUserById(Guid id);
     }
 }

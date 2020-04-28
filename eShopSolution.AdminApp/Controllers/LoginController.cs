@@ -40,9 +40,9 @@ namespace eShopSolution.AdminApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(ModelState);
-            var token = await _userApiClient.Authentication(request);
+            var result = await _userApiClient.Authentication(request);
 
-            var userPrincipal = this.ValidateToken(token);
+            var userPrincipal = this.ValidateToken(result.ResultObj);
 
             //properties cookie
             var authProperties = new AuthenticationProperties
@@ -50,7 +50,7 @@ namespace eShopSolution.AdminApp.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = true
             };
-            HttpContext.Session.SetString("Token", token);
+            HttpContext.Session.SetString("Token", result.ResultObj);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
             return RedirectToAction("Index", "Home");
         }
