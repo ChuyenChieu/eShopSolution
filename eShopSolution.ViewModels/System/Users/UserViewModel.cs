@@ -26,5 +26,7 @@ namespace eShopSolution.ViewModels.System.Users
 
         [Display(Name = "Hòm thư")]
         public string Email { get; set; }
+
+        public IList<string> Roles { get; set; }
     }
 }
